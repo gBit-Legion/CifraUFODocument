@@ -1,5 +1,6 @@
 import convertapi
-import pdf2docx
+import aspose.words as aw
+from pathlib import Path
 
 convertapi.api_secret = 'GsF3yw5vjYHRScRs'
 
@@ -9,19 +10,24 @@ class Converter():
         self.file = file
 
     def pdf_to_doc(self):
-        pass
+        doc = aw.Document(self.file)
+        doc.save('save/' + self.file.rsplit(".", 1)[0] + '.doc')
 
     def pdf_to_docx(self):
-        pass
+        doc = aw.Document(self.file)
+        doc.save('save/' + self.file.rsplit(".", 1)[0] + '.docx')
 
     def pdf_to_txt(self):
-        pass
+        doc = aw.Document(self.file)
+        doc.save('save/' + self.file.rsplit(".", 1)[0] + '.txt')
 
     def pdf_to_odt(self):
-        pass
+        doc = aw.Document(self.file)
+        doc.save('save/' + self.file.rsplit(".", 1)[0] + '.odt')
 
     def pdf_to_rtf(self):
-        pass
+        doc = aw.Document(self.file)
+        doc.save('save/' + self.file.rsplit(".", 1)[0] + '.rtf')
 
     def doc_to_pdf(self):
         convertapi.convert('pdf',
@@ -147,4 +153,6 @@ class Converter():
         convertapi.convert('rtf',
                            {'File': self.file},
                            from_format='txt').save_files('save')
+
+
 
