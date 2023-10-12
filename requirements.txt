@@ -1,3 +1,4 @@
 flask
 convertapi
 aspose-words
+python-docx
