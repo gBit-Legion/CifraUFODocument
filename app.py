@@ -2,7 +2,7 @@ import os
 
 from waitress import serve
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -18,6 +18,19 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+
+class Document(db.Model):
+    __tablename__ = 'documents_all'
+
+    id = db.Column(db.integer, primary_key=True)
+    file = db.Column(db.text())
+    status = db.Column(db.integer())
+
+    def __init__(self, file, status):
+        self.file = file
+        self.status = status
+
+
 migrate = Migrate(app, db)
 
 CORS(app)
@@ -28,9 +41,14 @@ def start_page():
     return "Hello my dr friends"
 
 
-@app.route('/documents', methods=["GET"])
+@app.route('/documents', methods=["GET", "POST"])
 def document_turnover():
-    return jsonify('Super_Hero" : "1')
+    if request.method == "POST":
+        if request.is_json:
+            data = request.get_json()
+            new_document = Document(file=data['file'], status=2)
+            db.session.add(new_document)
+            db.session.commit()
 
 
 if __name__ == "__main__":
