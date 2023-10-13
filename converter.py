@@ -1,11 +1,10 @@
 import convertapi
 import aspose.words as aw
-from pathlib import Path
 
 convertapi.api_secret = 'GsF3yw5vjYHRScRs'
 
 
-class Converter():
+class Converter:
     def __init__(self, file):
         self.file = file
 
@@ -153,6 +152,3 @@ class Converter():
         convertapi.convert('rtf',
                            {'File': self.file},
                            from_format='txt').save_files('save')
-
-
-

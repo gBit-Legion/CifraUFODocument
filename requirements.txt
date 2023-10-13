@@ -2,3 +2,7 @@ flask
 convertapi
 aspose-words
 python-docx
+flask_sqlalchemy
+psycopg2-binary
+Flask-Migrate
+flask_cors
