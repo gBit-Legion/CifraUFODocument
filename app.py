@@ -49,7 +49,7 @@ def document_turnover():
             new_document = Document(file=data['file'], status=2)
             db.session.add(new_document)
             db.session.commit()
-            return {"message": f"car {new_document.file} has been created successfully."}
+            return {"message": f"document {new_document.file} has been created successfully."}
         else:
             return {"error": "The request payload is not in JSON format"}
 
