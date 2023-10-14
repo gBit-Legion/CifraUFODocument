@@ -1,5 +1,7 @@
 import convertapi
 import aspose.words as aw
+from pdf2image import convert_from_path, convert_from_bytes
+import tempfile
 
 convertapi.api_secret = 'GsF3yw5vjYHRScRs'
 
@@ -11,6 +13,9 @@ class Converter:
     def pdf_to_doc(self):
         doc = aw.Document(self.file)
         doc.save('save/' + self.file.rsplit(".", 1)[0] + '.doc')
+
+    def pdf_to_img(self):
+        convert_from_path(self.file, output_folder=f'save/{self.file}.jpg')
 
     def pdf_to_docx(self):
         doc = aw.Document(self.file)
