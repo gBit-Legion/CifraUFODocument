@@ -1,22 +1,4 @@
-<template>
-    <div id="file-drag-drop">
-        <form ref="fileform">
-            <span class="drop-files">Перетащите сюда файл</span>
-        </form>
-        <progress max="100" :value.prop="uploadPercentage"></progress>
-        <div v-for="(file, key) in files" class="file-listing">
-            <img class="preview" v-bind:ref="'preview' + parseInt(key)" />
-            {{ file.name }}
-
-            <div class="remove-container">
-                <a class="remove" v-on:click="removeFile(key)">Удалить</a>
-            </div>
-        </div>
-        <a class="submit-button" v-on:click="submitFiles()" v-show="files.length > 0">Отправить</a>
-    </div>
-</template>
-
-<style>
+<style scoped>
 form {
     display: block;
     height: 400px;
@@ -30,7 +12,7 @@ form {
 }
 
 div.file-listing {
-    width: 600px;
+    width: 400px;
     margin: auto;
     padding: 10px;
     border-bottom: 1px solid #ddd;
@@ -38,6 +20,7 @@ div.file-listing {
 
 div.file-listing img {
     height: 100px;
+    display: block;
 }
 
 div.remove-container {
@@ -71,8 +54,35 @@ progress {
 }
 </style>
 
+<template>
+    <div id="file-drag-drop">
+        <h2>Drag And Drop</h2>
+        <hr />
+        <form id="drop-form" @drop="handleFileDrop($event)">
+            <span class="drop-files">Drop the files here!</span>
+        </form>
+
+        <div v-for="(file, key) in files" v-bind:key="'file-' + key" class="file-listing">
+            <img class="preview" v-bind:id="'drag-and-drop-preview-' + parseInt(key)" />
+            {{ file.name }}
+            <div class="remove-container">
+                <a class="remove" v-on:click="removeFile(key)">Remove</a>
+            </div>
+        </div>
+
+        <progress max="100" :value.prop="uploadPercentage"></progress>
+
+        <a class="submit-button" v-on:click="submitFiles()" v-show="files.length > 0">Submit</a>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="photo">
+        <input type="submit" value="Submit">
+    </form>
+</template>
+
 <script>
 import axios from 'axios';
+
 export default {
     data() {
         return {
@@ -81,52 +91,132 @@ export default {
             uploadPercentage: 0
         }
     },
+
     mounted() {
+        /*
+            Определите, поддерживается ли в браузере функция перетаскивания.
+        */
         this.dragAndDropCapable = this.determineDragAndDropCapable();
+
+        /*
+            Если возможно перетаскивание, мы продолжаем привязывать события к нашим элементам.
+        */
         if (this.dragAndDropCapable) {
+            this.bindEvents();
+        }
+    },
+
+    methods: {
+        bindEvents() {
+            /*
+                Прослушивайте все события перетаскивания и привязывайте прослушиватель событий к каждому.
+для файловой формы.
+            */
             ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(function (evt) {
-                this.$refs.fileform.addEventListener(evt, function (e) {
+                /*
+                    Для каждого события добавьте прослушиватель событий, который предотвращает действие по умолчанию.
+(открыв файл в браузере) и остановить распространение события (так
+никакие другие элементы не открывают файл в браузере)
+                */
+                document.getElementById('drop-form').addEventListener(evt, function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                 }.bind(this), false);
             }.bind(this));
-            this.$refs.fileform.addEventListener('drop', function (e) {
-                for (let i = 0; i < e.dataTransfer.files.length; i++) {
-                    this.files.push(e.dataTransfer.files[i]);
-                    this.getImagePreviews();
-                }
-            }.bind(this));
-        }
-    },
-    methods: {
+        },
+
+        handleFileDrop(event) {
+            for (let i = 0; i < event.dataTransfer.files.length; i++) {
+                this.files.push(event.dataTransfer.files[i]);
+            }
+
+            this.getImagePreviews();
+        },
+
         determineDragAndDropCapable() {
+            /*
+                Создайте тестовый элемент, чтобы проверить, являются ли определенные события
+присутствуют, что позволяет нам перетаскивать.
+            */
             var div = document.createElement('div');
+
+            /*
+                Проверьте, находится ли событие `перетаскивания` в элементе.
+или события ondragstart и ondrop находятся в элементе. Если
+они есть, значит у нас есть то, что нам нужно для перетаскивания файлов.
+
+Мы также проверяем, есть ли в окне объекты FormData и FileReader.
+присутствует, чтобы мы могли выполнить загрузку AJAX
+            */
             return (('draggable' in div)
                 || ('ondragstart' in div && 'ondrop' in div))
                 && 'FormData' in window
                 && 'FileReader' in window;
         },
+
         getImagePreviews() {
+            /*
+                Переберите все файлы и создайте предварительный просмотр изображения для каждого из них.
+            */
             for (let i = 0; i < this.files.length; i++) {
-                if (/\.(jpe?g|png|gif|docx)$/i.test(this.files[i].name)) {
+                /*
+                    Убедитесь, что файл является файлом изображения.
+                */
+                if (/\.(jpe?g|png|gif)$/i.test(this.files[i].name)) {
+                    /*
+                        Создайте новый объект FileReader.
+                    */
                     let reader = new FileReader();
+
+                    /*
+                        Добавьте прослушиватель событий, когда файл был загружен.
+                         чтобы обновить src при предварительном просмотре файла.
+                    */
                     reader.addEventListener("load", function () {
-                        this.$refs['preview' + parseInt(i)][0].src = reader.result;
+                        document.getElementById('drag-and-drop-preview-' + parseInt(i)).src = reader.result;
                     }.bind(this), false);
+
+                    /*
+                        Считайте данные файла через устройство чтения. Когда оно имеет
+                         загружено, мы слушаем распространяемое событие и устанавливаем изображение
+                         src к тому, что было загружено из ридера.
+                    */
                     reader.readAsDataURL(this.files[i]);
                 } else {
+                    /*
+                        Мы делаем следующий тик, чтобы ссылка была привязана и мы могли получить к ней доступ.
+                    */
                     this.$nextTick(function () {
-                        this.$refs['preview' + parseInt(i)][0].src = '/image/file.svg';
+                        document.getElementById('drag-and-drop-preview-' + parseInt(i)).src = '/images/file.png';
                     });
                 }
             }
         },
+
+        removeFile(key) {
+            this.files.splice(key, 1);
+            this.getImagePreviews();
+        },
+
         submitFiles() {
+            /*
+                Инициализируйте данные формы
+            */
             let formData = new FormData();
+
+            /*
+                Перебрать любой файл, отправленный после добавления файлов.
+                 к данным формы.
+            */
             for (var i = 0; i < this.files.length; i++) {
                 let file = this.files[i];
+
                 formData.append('files[' + i + ']', file);
             }
+
+            /*
+                Сделайте запрос к URL-адресу POST /file-drag-drop.
+            */
             axios.post('http://26.234.143.237:8080/documents',
                 formData,
                 {
@@ -134,7 +224,7 @@ export default {
                         'Content-Type': 'multipart/form-data'
                     },
                     onUploadProgress: function (progressEvent) {
-                        this.uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+                        this.uploadPercentage = parseInt(Math.round((progressEvent.loaded / progressEvent.total) * 100));
                     }.bind(this)
                 }
             ).then(function () {
@@ -143,10 +233,9 @@ export default {
                 .catch(function () {
                     console.log('FAILURE!!');
                 });
-        },
-        removeFile(key) {
-            this.files.splice(key, 1);
         }
     }
 }
+
+    
 </script>
