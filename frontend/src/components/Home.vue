@@ -21,7 +21,7 @@
 }
 
 .logo {
-    width: 300px;
+    width: 200px;
     margin: 0 auto;
 }
 </style>
