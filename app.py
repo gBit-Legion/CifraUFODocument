@@ -3,14 +3,11 @@ import os
 from waitress import serve
 
 from flask import Flask, jsonify, request, redirect
-from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.config.from_object(__name__)
-
-basedir = os.path.abspath(os.path.dirname(__file__))
+CORS(app=app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     'postgresql://postgres:1234@10.0.0.100:5432/document'
@@ -31,27 +28,14 @@ class Document(db.Model):
         self.status = status
 
 
-migrate = Migrate(app, db)
-
-CORS(app)
-
-
 @app.route("/", methods=["GET"])
 def start_page():
-    return "Hello my dr friends"
+    return "index.html"
 
 
 @app.route('/documents', methods=["GET", "POST"])
-def document_turnover():
-    if request.method == "POST":
-        if request.is_json:
-            data = request.get_json()
-            new_document = Document(file=data['file'], status=2)
-            db.session.add(new_document)
-            db.session.commit()
-            return {"message": f"document {new_document.file} has been created successfully."}
-        else:
-            return {"error": "The request payload is not in JSON format"}
+def render_drag_and_drop_window():
+    pass
 
 
 if __name__ == "__main__":
