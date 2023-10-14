@@ -1,6 +1,3 @@
-# Пример !!!
-
-
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -9,7 +6,6 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 class VacationReportGenerator:
     def __init__(self):
         self.doc = Document()
-        self.doc.add_heading('Рапорт на отпуск', level=1)
 
     def set_font_size(self, size):
         self.doc.styles['Normal'].font.size = Pt(size)
@@ -46,51 +42,21 @@ class VacationReportGenerator:
         run = paragraph.runs[0]
         run.bold = True
 
-    def add_information(self, employee_name, department, vacation_start, vacation_end, reason):
-        self.doc.add_heading('Информация', level=2)
-        table = self.doc.add_table(rows=5, cols=2)
+    def add_information(self, table_name, rows, columns, table_data_list):
+        self.doc.add_heading(table_name, level=2)
+        table = self.doc.add_table(rows=rows, cols=columns)
         table.style = 'Table Grid'
 
-        cells = table.rows[0].cells
-        cells[0].text = 'Сотрудник'
-        cells[1].text = employee_name
+        for row, data in table.rows:
+            for column in table.columns:
+                table.cell(row, column).text = table_data_list(row, column)
 
-        cells = table.rows[1].cells
-        cells[0].text = 'Отдел'
-        cells[1].text = department
-
-        cells = table.rows[2].cells
-        cells[0].text = 'Период отпуска'
-        cells[1].text = f'{vacation_start} - {vacation_end}'
-
-        cells = table.rows[3].cells
-        cells[0].text = 'Причина отпуска'
-        cells[1].text = reason
-
-    def add_list(self, items):
-        self.doc.add_heading('Список дел', level=2)
+    def add_list(self, items, list_name):
+        self.doc.add_heading(list_name, level=2)
         for item in items:
             p = self.doc.add_paragraph()
-            p.add_run(u'\u2022').bold = True  
+            p.add_run(u'\u2022').bold = True
             p.add_run(' ' + item)
 
     def save_report(self, filename):
         self.doc.save(filename)
-
-
-#  использование класса VacationReportGenerator. Пример !!!
-report_generator = VacationReportGenerator()
-report_generator.set_font_size(12)
-report_generator.set_paragraph_spacing(before=0.5, after=0.5)
-report_generator.set_paragraph_alignment('left')
-report_generator.set_line_spacing(1.5)
-report_generator.set_page_margins(top=1, bottom=1, left=1, right=1)
-
-report_generator.add_section('Важное сообщение', 'Прошу рассмотреть мою заявку на отпуск.')
-report_generator.add_information('Иванов Иван Иванович', 'Отдел продаж', '01.11.2023', '15.11.2023',
-                                'Необходим отдых для восстановления энергии.')
-
-tasks = ['Закончить проект', 'Подготовить отчет', 'Вернуться в указанное время']
-report_generator.add_list(tasks)
-
-report_generator.save_report('рапорт_на_отпуск.docx')

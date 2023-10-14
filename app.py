@@ -2,7 +2,7 @@ import os
 
 from waitress import serve
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, redirect
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -22,9 +22,9 @@ db = SQLAlchemy(app)
 class Document(db.Model):
     __tablename__ = 'documents_all'
 
-    id = db.Column(db.integer, primary_key=True)
-    file = db.Column(db.text())
-    status = db.Column(db.integer())
+    id = db.Column(db.INTEGER, primary_key=True)
+    file = db.Column(db.TEXT())
+    status = db.Column(db.INTEGER())
 
     def __init__(self, file, status):
         self.file = file
@@ -49,6 +49,9 @@ def document_turnover():
             new_document = Document(file=data['file'], status=2)
             db.session.add(new_document)
             db.session.commit()
+            return {"message": f"car {new_document.file} has been created successfully."}
+        else:
+            return {"error": "The request payload is not in JSON format"}
 
 
 if __name__ == "__main__":
