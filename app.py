@@ -13,7 +13,9 @@ import OcrToTableTool as ottt
 import DocumentEditor as de
 
 app = Flask(__name__)
-CORS(app=app)
+
+cors = CORS(app, origins=['*', '*'])
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     'postgresql://postgres:1234@10.0.0.100:5432/document'

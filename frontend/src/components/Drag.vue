@@ -213,7 +213,7 @@ import axios from 'axios'
         for( var i = 0; i < this.files.length; i++ ){
           let file = this.files[i];
 
-          formData.append('files[]', file);
+          formData.append('files[' + i + ']', file);
         }
 
         /*

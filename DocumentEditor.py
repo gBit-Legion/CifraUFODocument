@@ -3,6 +3,7 @@ from docx.shared import Pt, Cm, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 
+
 class DocumentEditor:
     def __init__(self):
         self.doc = Document()
@@ -12,7 +13,7 @@ class DocumentEditor:
     def execute(self, filename, code_table, medium_table, large_table):
         self.set_margins(2, 1, 2, 2)
         self.add_paragraph(left_indent=Inches(4.5), font_size=Pt(10),
-                             text='Типовая межотраслевая форма № М-11\nУтверждена распоряжением ОАО "Никелин"\nот 15.12.2008 № 2688р')
+                           text='Типовая межотраслевая форма № М-11\nУтверждена распоряжением ОАО "Никелин"\nот 15.12.2008 № 2688р')
         self.add_centered_paragraph('ТРЕБОВАНИЕ-НАКЛАДНАЯ № _______________', is_centered=True, font_size=Pt(12))
 
         table = self.doc.add_table(rows=4, cols=1, style='Table Grid')
@@ -33,8 +34,12 @@ class DocumentEditor:
         table.cell(3, 0).text = code_table[0][3]
         table.cell(3, 0).paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-        self.add_centered_paragraph('Организация_____________________________ОАО "Никелин"_____________________________', is_centered=False, font_size=Pt(12))
-        self.add_centered_paragraph('Структурное\nподразделение__________________________________________________________________________', is_centered=False, font_size=Pt(12))
+        self.add_centered_paragraph(
+            'Организация_____________________________ОАО "Никелин"_____________________________', is_centered=False,
+            font_size=Pt(12))
+        self.add_centered_paragraph(
+            'Структурное\nподразделение__________________________________________________________________________',
+            is_centered=False, font_size=Pt(12))
 
         table = self.add_table(rows=3, cols=9, style='Table Grid')
 
@@ -90,8 +95,11 @@ class DocumentEditor:
         table.cell(2, 8).text = medium_table[2][1]
         table.cell(2, 8).paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-        self.add_centered_paragraph('\nЧерез кого____________________________________________________________________', is_centered=False, font_size=Pt(12))
-        self.add_centered_paragraph('\nЗатребовал_________________________________________Разрешил___________________________________________________', is_centered=False, font_size=Pt(12))
+        self.add_centered_paragraph('\nЧерез кого____________________________________________________________________',
+                                    is_centered=False, font_size=Pt(12))
+        self.add_centered_paragraph(
+            '\nЗатребовал_________________________________________Разрешил___________________________________________________',
+            is_centered=False, font_size=Pt(12))
 
         table = self.add_table(rows=len(large_table[9]) + 1, cols=16, style='Table Grid')
 
@@ -233,8 +241,12 @@ class DocumentEditor:
             paragraph = table.cell(i + 2, 15).paragraphs[0]
             paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-        self.add_centered_paragraph('\nОтпустил   ____________   ____________   _________________   Получил   ____________   ____________   __________________',is_centered=False, font_size=Pt(12))
-        self.add_centered_paragraph('\t                (должность)           (подпись)       (расшифровка подписи)\t                      (должность)          (подпись)       (расшифровка подписи)', is_centered=False, font_size=Pt(8))
+        self.add_centered_paragraph(
+            '\nОтпустил   ____________   ____________   _________________   Получил   ____________   ____________   __________________',
+            is_centered=False, font_size=Pt(12))
+        self.add_centered_paragraph(
+            '\t                (должность)           (подпись)       (расшифровка подписи)\t                      (должность)          (подпись)       (расшифровка подписи)',
+            is_centered=False, font_size=Pt(8))
         self.add_centered_paragraph('\nДокумента материала:', is_centered=False, font_size=Pt(12))
         self.add_centered_paragraph('Бухгалтерский документ:', is_centered=False, font_size=Pt(12))
 
@@ -255,7 +267,7 @@ class DocumentEditor:
 
     def add_centered_paragraph(self, text, is_centered, font_size):
         paragraph = self.doc.add_paragraph()
-        if is_centered == True:
+        if is_centered:
             paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         else:
             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
