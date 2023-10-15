@@ -84,8 +84,7 @@ export default {
     mounted() {
         this.dragAndDropCapable = this.determineDragAndDropCapable();
         if (this.dragAndDropCapable) {
-<<<<<<< HEAD
-<<<<<<< HEAD
+          HEAD
             this.bindEvents();
         }
     },
@@ -98,10 +97,7 @@ export default {
                 Прослушивайте все события перетаскивания и привязывайте прослушиватель событий к каждому.
 для файловой формы.
             */
-=======
->>>>>>> parent of 9583037 (front 4)
-=======
->>>>>>> parent of 9583037 (front 4)
+          parent of 9583037 (front 4)
             ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(function (evt) {
                 this.$refs.fileform.addEventListener(evt, function (e) {
                     e.preventDefault();
@@ -143,7 +139,7 @@ export default {
             let formData = new FormData();
             for (var i = 0; i < this.files.length; i++) {
                 let file = this.files[i];
-                formData.append('files[' + i + ']', file);
+                formData.append('files[]', file);
             }
             axios.post('http://26.234.143.237:8080/documents',
                 formData,
