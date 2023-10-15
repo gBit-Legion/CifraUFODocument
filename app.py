@@ -6,6 +6,10 @@ from flask import Flask, jsonify, request, redirect, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
+import TableExtractor as te
+import OcrToTableTool as ottt
+import DocumentEditor as de
+
 app = Flask(__name__)
 CORS(app=app)
 
@@ -27,6 +31,23 @@ class Document(db.Model):
         self.file = file
         self.status = status
 
+# Первый параметр - путь к фотографии, которую нужно обработать
+# Второй параметр - путь, куда будет сохранен результат в виде .docx файла
+def model(path_to_image, path_to_result):
+    table_extractor = te.TableExtractor(path_to_image)
+    table_extractor.execute()
+
+    ocr_to_table_tool_code_table = ottt.OcrToTableTool('9_perspective_corrected_3.jpg')
+    code_table = ocr_to_table_tool_code_table.execute()
+
+    ocr_to_table_tool_medium_table = ottt.OcrToTableTool('9_perspective_corrected_2.jpg')
+    medium_table = ocr_to_table_tool_medium_table.execute()
+
+    ocr_to_table_tool_medium_table = ottt.OcrToTableTool('9_perspective_corrected_1.jpg')
+    large_table = ocr_to_table_tool_medium_table.execute()
+
+    editor = de.DocumentEditor()
+    editor.execute(path_to_result, code_table, medium_table, large_table)
 
 @app.route("/", methods=["GET"])
 def start_page():
