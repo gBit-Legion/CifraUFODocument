@@ -2,7 +2,7 @@ import os
 
 from waitress import serve
 
-from flask import Flask, jsonify, request, redirect
+from flask import Flask, jsonify, request, redirect, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
@@ -30,13 +30,21 @@ class Document(db.Model):
 
 @app.route("/", methods=["GET"])
 def start_page():
-    return "index.html"
+    return "frontend/public/index.html"
 
 
 @app.route('/documents', methods=["GET", "POST"])
 def render_drag_and_drop_window():
-    pass
+    if request.method == "POST":
+        f = request.files.getlist('files')
+        print(f)
+        for file in f:
+
+            file.save(os.path.join(app.config['save/'], file.filename))
+        return 'g'
+    else:
+        return "unsuccess"
 
 
 if __name__ == "__main__":
-    serve(app, host="26.234.143.237", port=8080)
+    app.run(host="26.234.143.237", port=8080)
