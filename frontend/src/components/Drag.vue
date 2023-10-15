@@ -85,6 +85,7 @@ export default {
         this.dragAndDropCapable = this.determineDragAndDropCapable();
         if (this.dragAndDropCapable) {
 <<<<<<< HEAD
+<<<<<<< HEAD
             this.bindEvents();
         }
     },
@@ -97,6 +98,8 @@ export default {
                 Прослушивайте все события перетаскивания и привязывайте прослушиватель событий к каждому.
 для файловой формы.
             */
+=======
+>>>>>>> parent of 9583037 (front 4)
 =======
 >>>>>>> parent of 9583037 (front 4)
             ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(function (evt) {
