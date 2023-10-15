@@ -1,4 +1,5 @@
 import os
+from os import walk
 
 from waitress import serve
 
@@ -6,6 +7,7 @@ from flask import Flask, jsonify, request, redirect, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
+from converter import Converter
 import TableExtractor as te
 import OcrToTableTool as ottt
 import DocumentEditor as de
@@ -31,6 +33,7 @@ class Document(db.Model):
         self.file = file
         self.status = status
 
+
 # Первый параметр - путь к фотографии, которую нужно обработать
 # Второй параметр - путь, куда будет сохранен результат в виде .docx файла
 def model(path_to_image, path_to_result):
@@ -49,19 +52,27 @@ def model(path_to_image, path_to_result):
     editor = de.DocumentEditor()
     editor.execute(path_to_result, code_table, medium_table, large_table)
 
+
 @app.route("/", methods=["GET"])
 def start_page():
-    return "frontend/public/index.html"
+    return ""
+
+
+@app.route("/result", methods=["GET", "POST"])
+def result_drop():
+
+    filenames = next(walk('save/raw'), (None, None, []))[2]
+    conv = Converter(filenames).pdf_to_img()
+    os.remove(f"save/raw{filenames}")
+    model(conv, 'save/good')
 
 
 @app.route('/documents', methods=["GET", "POST"])
 def render_drag_and_drop_window():
     if request.method == "POST":
-        f = request.files.getlist('files')
-        print(f)
+        f = request.files.getlist('files[0]')
         for file in f:
-
-            file.save(os.path.join(app.config['save/'], file.filename))
+            file.save(os.path.join(app.config['save/raw'], file.filename))
         return 'g'
     else:
         return "unsuccess"

@@ -6,3 +6,6 @@ flask_sqlalchemy
 psycopg2-binary
 Flask-Migrate
 flask_cors
+numpy
+opencv-python
+pytesseract
